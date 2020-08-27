@@ -1,2 +1,28 @@
-<nz-tree [nzData]="Nodes" nzDraggable nzBlockNode (nzOnDrop)="nzEvent($event)">
-</nz-tree>
+<div nz-row>
+  <nz-tree
+    [nzData]="NodesRoot"
+    [nzDraggable] = 'Drag'
+    nzBlockNode
+    (nzOnDragStart)="nzRootStart($event)"
+    (nzOnDragLeave)="nzDrag($event)"
+    [nzTreeTemplate]="nzTreeTemplate" 
+    nz-col nzSpan="10"
+  ></nz-tree>
+  <nz-tree
+    [nzData]="NodesInput"
+    [nzDraggable] = true
+    nzBlockNode
+    [nzTreeTemplate]="nzTreeTemplate" 
+    (nzOnDragLeave)="nzDrag($event)"
+    (nzOnDragStart)="nzEventStart($event)"
+    (nzOnDragEnd)="nzEventDragEnd($event)"
+    nz-col nzSpan="10"
+  ></nz-tree>
+
+  <ng-template #nzTreeTemplate let-node let-origin="origin">
+    <span class="folder-name">{{ node.title }}</span>
+    <span class="folder-desc"
+      > {{ node.key }}</span
+    >
+  </ng-template>
+</div>

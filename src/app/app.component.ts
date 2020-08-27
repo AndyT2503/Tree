@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { NzFormatEmitEvent } from 'ng-zorro-antd/tree';
+
+
 
 interface Node {
+  parent?: string;
   title: string;
+  key: string;
   children: Node[];
   isLeaf?: boolean;
 }
@@ -18,15 +23,125 @@ interface Map {
 })
 export class AppComponent implements OnInit {
 
-  list: Map[] = [];
+  Drag = true;
+  Nodechange: any;
+  listRoot: Map[] = [];
+  listInput: Map[] = [];
+  MatchTitle: string;
+  NodesRoot: Node[] = [];
+  NodesInput: Node[] = [];
+  CheckClick = false;
+  jsonRaw: any;
 
-  Nodes: Node[] = [];
+  json = `{"Root":{
+    "groupId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "whseid": "string",
+    "storerKey": "string",
+    "sku1": "string",
+    "description": "string",
+    "stdNetWeight": 0,
+    "stdGrossWeight": 0,
+    "stdCube": 0,
+    "notes": "string",
+    "wmsSyncDate": "2020-08-27T04:55:24.252Z",
+    "wmsSyncStatus": "string",
+    "wmsSyncError": "string",
+    "tmsSyncDate": "2020-08-27T04:55:24.252Z",
+    "tmsSyncStatus": "string",
+    "tmsSyncError": "string",
+    "sapMessageIdItem": "string",
+    "sapMaterialCode": "string",
+    "sapMaterialDesc": "string",
+    "sapMaterialLongText": "string",
+    "sapMaterialGroup": "string",
+    "sapMaterialGroupDesc": "string",
+    "sapBaseUom": "string",
+    "sapProductHierachy": "string",
+    "sapQtyPerRsc": "string",
+    "sapQtyPerPal": "string",
+    "sapGrossWeight": "string",
+    "sapNetWeight": "string",
+    "sapWeightUnit": "string",
+    "sapCreationDate": "string",
+    "sapVolumn": "string",
+    "sapVolumnUnit": "string",
+    "sapLastUpdate": "string",
+    "sapOldMaterialCode": "string",
+    "sapUpceancode": "string",
+    "sapShelfLife": "string",
+    "sapShelfLifeInd": "string",
+    "sapStatus": "string",
+    "sapLotIndicator": "string"
+  }}`;
 
-  FindChildren(x: Node): void {
-    for (const item of this.list) {
+  xml = `<?xml version="1.0" encoding="UTF-8"?>
+  <ns0:MT_Material xmlns:ns0="urn:OneMG:Outbound">
+      <CONTROL>
+          <MANDT>916</MANDT>
+          <DOCNUM>0000000000006417</DOCNUM>
+          <MESTYP>MATMAS</MESTYP>
+          <SNDPRN>PSICLNT916</SNDPRN>
+          <CRDATE>20200701</CRDATE>
+          <CRTIME>154810</CRTIME>
+      </CONTROL>
+      <ProductItems>
+          <ProductItem>
+              <MaterialCode>000000000095000092</MaterialCode>
+              <MaterialName>Sữa đặc ông thọ đỏ hộp 380g</MaterialName>
+              <MaterialType>ZFTR</MaterialType>
+              <ProductHierarchy>12030101410</ProductHierarchy>
+              <BaseUoM>HOP</BaseUoM>
+              <MaterialGroup>1DC001</MaterialGroup>
+              <Gross_Weight>0.000</Gross_Weight>
+              <Net_Weight>0.000</Net_Weight>
+              <Weight_Unit>KGM</Weight_Unit>
+              <Volume>0.000</Volume>
+              <Length>0.000</Length>
+              <Width>0.000</Width>
+              <Height>0.000</Height>
+              <TotalShelfLife>0</TotalShelfLife>
+              <TaxClass>1</TaxClass>
+              <DistributionChannel>GT</DistributionChannel>
+              <ProductUnit>
+                  <UoM>HOP</UoM>
+                  <NumeratorConversion>1</NumeratorConversion>
+                  <DenominatorConversion>1</DenominatorConversion>
+                  <Gross_Weight>0.000</Gross_Weight>
+                  <Net_Weight>0.000</Net_Weight>
+                  <WeightUnit>KGM</WeightUnit>
+                  <Volume>0.000</Volume>
+                  <Length>0.000</Length>
+                  <Width>0.000</Width>
+                  <Height>0.000</Height>
+              </ProductUnit>
+              <ProductUnit>
+                  <UoM>T48</UoM>
+                  <NumeratorConversion>48</NumeratorConversion>
+                  <DenominatorConversion>1</DenominatorConversion>
+                  <Gross_Weight>0.000</Gross_Weight>
+                  <Net_Weight>0.000</Net_Weight>
+                  <WeightUnit>KGM</WeightUnit>
+                  <Volume>0.000</Volume>
+                  <Length>0.000</Length>
+                  <Width>0.000</Width>
+                  <Height>0.000</Height>
+              </ProductUnit>
+              <ProductBarcode>
+                  <Barcode>8934673312509</Barcode>
+                  <BarcodeUoM>HOP</BarcodeUoM>
+                  <MainBarcode>X</MainBarcode>
+              </ProductBarcode>
+          </ProductItem>
+      </ProductItems>
+  </ns0:MT_Material>`;
+
+
+
+  FindChildren(x: Node, list: Map[]): void {
+    for (const item of list) {
       if (item.parent === x.title) {
-        const obj = { title: item.title, children: [], isLeaf: true };
-        this.FindChildren(obj);
+        const obj = { parent: item.parent, title: item.title, key: item.title, children: [], isLeaf: true, equivalentTitle: '' };
+        this.FindChildren(obj, list);
         if (obj.children.length !== 0) {
           obj.isLeaf = false;
         }
@@ -35,22 +150,22 @@ export class AppComponent implements OnInit {
     }
   }
 
-  CreateNodes(): void {
+  CreateNodes(list: Map[], nodes: Node[]): void {
     let root: Node;
-    this.list.forEach(value => {
+    list.forEach(value => {
       if (value.parent === '') {
-        const obj = { title: value.title, children: [] };
+        const obj = { title: value.title, key: value.title, children: [], equivalentTitle: '' };
         root = obj;
       }
     });
-    this.FindChildren(root);
-    this.Nodes.push(root);
-    console.log(JSON.stringify(this.Nodes));
+    this.FindChildren(root, list);
+    nodes.push(root);
+    console.log(this.NodesRoot);
   }
 
-  AddMap(key: string, value: any): void {
+  AddMap(key: string, value: any, list: Map[]): void {
     let flag = 1;
-    this.list.forEach((val: Map) => {
+    list.forEach((val: Map) => {
       if (val.parent === key) {
         flag = 0;
       }
@@ -59,7 +174,7 @@ export class AppComponent implements OnInit {
       if (Array.isArray(value) === true) {
         for (const item of value) {
           let obj = { parent: key, title: item, children: [] };
-          this.list.push(obj);
+          list.push(obj);
         }
       }
     }
@@ -67,7 +182,7 @@ export class AppComponent implements OnInit {
 
 
 
-  CheckObj(objs: any, key: any): void {
+  CheckObj(objs: any, key: any, list: Map[]): void {
     // tslint:disable-next-line: forin
     for (const obj in objs) {
       if (Array.isArray(objs[obj]) === false && typeof (objs[obj]) !== 'string') {
@@ -77,92 +192,94 @@ export class AppComponent implements OnInit {
             keys = k;
           }
         }
-        this.CheckObj(objs[obj], keys);
+        this.CheckObj(objs[obj], keys, list);
       }
       if (Array.isArray(objs[obj]) === true) {
         for (const a of objs[obj]) {
-          console.log(a);
-          this.CheckObj(a, obj);
+          this.CheckObj(a, obj, list);
         }
       }
       // tslint:disable-next-line: align
-      this.AddMap(key, Object.keys(objs));
+      this.AddMap(key, Object.keys(objs), list);
     }
   }
 
   ngOnInit(): void {
     const xml2js = require('xml2js');
     const parser = new xml2js.Parser({ explicitArray: false });
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-    <ns0:MT_Material xmlns:ns0="urn:OneMG:Outbound">
-        <CONTROL>
-            <MANDT>916</MANDT>
-            <DOCNUM>0000000000006417</DOCNUM>
-            <MESTYP>MATMAS</MESTYP>
-            <SNDPRN>PSICLNT916</SNDPRN>
-            <CRDATE>20200701</CRDATE>
-            <CRTIME>154810</CRTIME>
-        </CONTROL>
-        <ProductItems>
-            <ProductItem>
-                <MaterialCode>000000000095000092</MaterialCode>
-                <MaterialName>Sữa đặc ông thọ đỏ hộp 380g</MaterialName>
-                <MaterialType>ZFTR</MaterialType>
-                <ProductHierarchy>12030101410</ProductHierarchy>
-                <BaseUoM>HOP</BaseUoM>
-                <MaterialGroup>1DC001</MaterialGroup>
-                <Gross_Weight>0.000</Gross_Weight>
-                <Net_Weight>0.000</Net_Weight>
-                <Weight_Unit>KGM</Weight_Unit>
-                <Volume>0.000</Volume>
-                <Length>0.000</Length>
-                <Width>0.000</Width>
-                <Height>0.000</Height>
-                <TotalShelfLife>0</TotalShelfLife>
-                <TaxClass>1</TaxClass>
-                <DistributionChannel>GT</DistributionChannel>
-                <ProductUnit>
-                    <UoM>HOP</UoM>
-                    <NumeratorConversion>1</NumeratorConversion>
-                    <DenominatorConversion>1</DenominatorConversion>
-                    <Gross_Weight>0.000</Gross_Weight>
-                    <Net_Weight>0.000</Net_Weight>
-                    <WeightUnit>KGM</WeightUnit>
-                    <Volume>0.000</Volume>
-                    <Length>0.000</Length>
-                    <Width>0.000</Width>
-                    <Height>0.000</Height>
-                </ProductUnit>
-                <ProductUnit>
-                    <UoM>T48</UoM>
-                    <NumeratorConversion>48</NumeratorConversion>
-                    <DenominatorConversion>1</DenominatorConversion>
-                    <Gross_Weight>0.000</Gross_Weight>
-                    <Net_Weight>0.000</Net_Weight>
-                    <WeightUnit>KGM</WeightUnit>
-                    <Volume>0.000</Volume>
-                    <Length>0.000</Length>
-                    <Width>0.000</Width>
-                    <Height>0.000</Height>
-                </ProductUnit>
-                <ProductBarcode>
-                    <Barcode>8934673312509</Barcode>
-                    <BarcodeUoM>HOP</BarcodeUoM>
-                    <MainBarcode>X</MainBarcode>
-                </ProductBarcode>
-            </ProductItem>
-        </ProductItems>
-    </ns0:MT_Material>`;
 
+    this.jsonRaw = JSON.parse(this.json);
     let jsonTree: string;
-    parser.parseString(xml, function (err, result) {
+    parser.parseString(this.xml, function (err, result) {
       jsonTree = result;
     });
-    this.CheckObj(jsonTree, '');
-    this.CreateNodes();
+    this.CheckObj(this.jsonRaw, '', this.listRoot);
+    this.CreateNodes(this.listRoot, this.NodesRoot);
+    this.CheckObj(jsonTree, '', this.listInput);
+    this.CreateNodes(this.listInput, this.NodesInput);
   }
 
-  nzEvent($event) {
+
+  FindNode(value: Node, key: any, inputTitle: string): Node {
+    if (value.title === key.title && value.parent === key.parentNode.title) {
+      value.key = inputTitle;
+      return value;
+    }
+    else {
+      let res: Node;
+      value.children.forEach(item => {
+        if (!res) {
+          res = this.FindNode(item, key, inputTitle);
+        }
+      });
+      return res;
+    }
+  }
+
+
+  nzDrag(event: NzFormatEmitEvent): void {
+    console.log(event.node.origin.parent);
+    if (event.node.origin.parent !== 'Root') {
+      this.Nodechange = '';
+    }
+    else {
+      this.Nodechange = event.node;
+    }
+  }
+  nzEventStart(event: NzFormatEmitEvent): void {
+    this.Drag = true;
+    this.MatchTitle = event.node.title;
+  }
+
+  nzEventDragEnd(event: NzFormatEmitEvent): void {
+    let res: Node;
+    if (this.Nodechange !== '') {
+      this.NodesRoot.forEach(value => {
+        if (!res) {
+          res = this.FindNode(value, this.Nodechange, this.MatchTitle);
+        }
+      });
+      this.NodesRoot = [...this.NodesRoot];
+      this.UpdateJsonReturn();
+    }
+  }
+
+  nzRootStart(event: NzFormatEmitEvent): void {
+    this.Drag = false;
+  }
+  UpdateJsonReturn(): void {
+    const list = this.NodesRoot[0].children;
+
+    const newList = list.map(x => {
+      return {
+        key: x.key,
+        value: x.title
+      };
+    });
+    const newObj = {};
+    list.forEach(x => {
+      newObj[x.title] = x.key;
+    });
 
   }
 }

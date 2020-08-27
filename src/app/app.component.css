@@ -1,41 +1,9 @@
-.ant-tree, .ant-tree-checkbox-group {
-    box-sizing: border-box;
-    padding: 0;
-    color: rgba(0,0,0,.65);
-    font-size: 14px;
-    font-variant: tabular-nums;
-    line-height: 1.5715;
-    list-style: none;
-    font-feature-settings: 'tnum';
+.file-desc,
+.folder-desc {
+    padding: 0 8px;
+    display: inline-block;
+    background: #87ceff;
+    color: #ffffff;
+    position: relative;
+    left: 12px;
 }
-
-.ant-tree {
-    margin: 0;
-    background: #fff;
-    border-radius: 2px;
-    transition: background-color .3s;
-}
-
-.ant-btn, [role=button], a, area, button, input:not([type=range]), label, select, summary, textarea {
-    touch-action: manipulation;
-}
-
-.ant-tree .ant-tree-treenode {
-    display: flex;
-    align-items: flex-start;
-    padding: 0 0 4px;
-    outline: 0;
-}
-
-.ant-tree .ant-tree-switcher {
-    flex: none;
-    width: 24px;
-    height: 24px;
-    margin: 0;
-    line-height: 24px;
-    text-align: center;
-    cursor: pointer;
-}
-
-
-

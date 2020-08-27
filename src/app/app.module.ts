@@ -1,22 +1,33 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { registerLocaleData } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import en from '@angular/common/locales/en';
 import { NgModule } from '@angular/core';
-
+import { FormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { en_US, NZ_I18N } from 'ng-zorro-antd/i18n';
+import { NzTreeModule } from 'ng-zorro-antd/tree';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NzTreeModule } from 'ng-zorro-antd/tree';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NzGridModule } from 'ng-zorro-antd/grid';
+
+
+registerLocaleData(en);
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NzTreeModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    FormsModule,
+    HttpClientModule,
+    NzGridModule
   ],
-  providers: [],
+  providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
