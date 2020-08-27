@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DoCheck, OnChanges } from '@angular/core';
 import { NzFormatEmitEvent } from 'ng-zorro-antd/tree';
 
 
@@ -9,6 +9,7 @@ interface Node {
   key: string;
   children: Node[];
   isLeaf?: boolean;
+  expanded?: boolean;
 }
 
 interface Map {
@@ -140,7 +141,7 @@ export class AppComponent implements OnInit {
   FindChildren(x: Node, list: Map[]): void {
     for (const item of list) {
       if (item.parent === x.title) {
-        const obj = { parent: item.parent, title: item.title, key: item.title, children: [], isLeaf: true, equivalentTitle: '' };
+        const obj = { parent: item.parent, title: item.title, key: item.title, children: [], isLeaf: true };
         this.FindChildren(obj, list);
         if (obj.children.length !== 0) {
           obj.isLeaf = false;
@@ -154,13 +155,12 @@ export class AppComponent implements OnInit {
     let root: Node;
     list.forEach(value => {
       if (value.parent === '') {
-        const obj = { title: value.title, key: value.title, children: [], equivalentTitle: '' };
+        const obj = { title: value.title, key: value.title, children: []};
         root = obj;
       }
     });
     this.FindChildren(root, list);
     nodes.push(root);
-    console.log(this.NodesRoot);
   }
 
   AddMap(key: string, value: any, list: Map[]): void {
@@ -217,6 +217,7 @@ export class AppComponent implements OnInit {
     this.CreateNodes(this.listRoot, this.NodesRoot);
     this.CheckObj(jsonTree, '', this.listInput);
     this.CreateNodes(this.listInput, this.NodesInput);
+    console.log(this.NodesRoot);
   }
 
 
@@ -236,9 +237,11 @@ export class AppComponent implements OnInit {
     }
   }
 
+  nzDrop(event: NzFormatEmitEvent): void {
+    console.log(event);
+  }
 
   nzDrag(event: NzFormatEmitEvent): void {
-    console.log(event.node.origin.parent);
     if (event.node.origin.parent !== 'Root') {
       this.Nodechange = '';
     }
@@ -246,8 +249,10 @@ export class AppComponent implements OnInit {
       this.Nodechange = event.node;
     }
   }
-  nzEventStart(event: NzFormatEmitEvent): void {
+  nzInputDragStart(event: NzFormatEmitEvent): void {
+    console.log(this.NodesRoot);
     this.Drag = true;
+    console.log(JSON.stringify(this.NodesRoot));
     this.MatchTitle = event.node.title;
   }
 
@@ -267,6 +272,7 @@ export class AppComponent implements OnInit {
   nzRootStart(event: NzFormatEmitEvent): void {
     this.Drag = false;
   }
+
   UpdateJsonReturn(): void {
     const list = this.NodesRoot[0].children;
 

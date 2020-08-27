@@ -1,12 +1,13 @@
 <div nz-row>
   <nz-tree
     [nzData]="NodesRoot"
-    [nzDraggable] = 'Drag'
+    [nzDraggable] = "Drag"
     nzBlockNode
-    (nzOnDragStart)="nzRootStart($event)"
     (nzOnDragLeave)="nzDrag($event)"
+    (nzOnDrop)="nzDrop($event)"
     [nzTreeTemplate]="nzTreeTemplate" 
     nz-col nzSpan="10"
+    (mouseover)="nzRootStart($event)"
   ></nz-tree>
   <nz-tree
     [nzData]="NodesInput"
@@ -14,9 +15,9 @@
     nzBlockNode
     [nzTreeTemplate]="nzTreeTemplate" 
     (nzOnDragLeave)="nzDrag($event)"
-    (nzOnDragStart)="nzEventStart($event)"
+    (nzOnDragStart)="nzInputDragStart($event)"
     (nzOnDragEnd)="nzEventDragEnd($event)"
-    nz-col nzSpan="10"
+    nz-col nzSpan="10"	
   ></nz-tree>
 
   <ng-template #nzTreeTemplate let-node let-origin="origin">
