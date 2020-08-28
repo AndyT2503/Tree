@@ -8,6 +8,7 @@ interface Node {
   title: string;
   key: string;
   children: Node[];
+
   isLeaf?: boolean;
   expanded?: boolean;
 }
@@ -16,6 +17,8 @@ interface Map {
   parent: string;
   title: any;
   children: Map[];
+  value?: any;
+  isArray: boolean;
 }
 @Component({
   selector: 'app-root',
@@ -25,6 +28,7 @@ interface Map {
 export class AppComponent implements OnInit {
 
   Drag = true;
+  RootName: string;
   Nodechange: any;
   listRoot: Map[] = [];
   listInput: Map[] = [];
@@ -33,6 +37,7 @@ export class AppComponent implements OnInit {
   NodesInput: Node[] = [];
   CheckClick = false;
   jsonRaw: any;
+  jsonSave: any;
 
   json = `{"Root":{
     "groupId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
@@ -155,10 +160,11 @@ export class AppComponent implements OnInit {
     let root: Node;
     list.forEach(value => {
       if (value.parent === '') {
-        const obj = { title: value.title, key: value.title, children: []};
+        const obj = { title: value.title, key: value.title, children: [] };
         root = obj;
       }
     });
+    this.RootName = root.title;
     this.FindChildren(root, list);
     nodes.push(root);
   }
@@ -199,6 +205,7 @@ export class AppComponent implements OnInit {
           this.CheckObj(a, obj, list);
         }
       }
+
       // tslint:disable-next-line: align
       this.AddMap(key, Object.keys(objs), list);
     }
@@ -249,11 +256,20 @@ export class AppComponent implements OnInit {
       this.Nodechange = event.node;
     }
   }
+
+
+  GetLinkOfNode(node: any, val: string): string {
+    if (node.parentNode !== null) {
+      val = node.title + '.' + val;
+      val = this.GetLinkOfNode(node.parentNode, val);
+    }
+    return (val);
+  }
   nzInputDragStart(event: NzFormatEmitEvent): void {
-    console.log(this.NodesRoot);
     this.Drag = true;
-    console.log(JSON.stringify(this.NodesRoot));
-    this.MatchTitle = event.node.title;
+    let link = this.GetLinkOfNode(event.node, '');
+    link = link.slice(0, -1);
+    this.MatchTitle = link;
   }
 
   nzEventDragEnd(event: NzFormatEmitEvent): void {
@@ -275,18 +291,15 @@ export class AppComponent implements OnInit {
 
   UpdateJsonReturn(): void {
     const list = this.NodesRoot[0].children;
-
-    const newList = list.map(x => {
-      return {
-        key: x.key,
-        value: x.title
-      };
-    });
     const newObj = {};
     list.forEach(x => {
       newObj[x.title] = x.key;
     });
+    this.jsonSave = newObj;
+  }
 
+  SaveObj(): void{
+    localStorage.setItem(this.RootName, JSON.stringify(this.jsonSave));
   }
 }
 
