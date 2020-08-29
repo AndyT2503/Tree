@@ -16,9 +16,7 @@ interface Node {
 interface Map {
   parent: string;
   title: any;
-  children: Map[];
-  value?: any;
-  isArray: boolean;
+  key?: string;
 }
 @Component({
   selector: 'app-root',
@@ -27,57 +25,116 @@ interface Map {
 })
 export class AppComponent implements OnInit {
 
-  Drag = true;
-  RootName: string;
-  Nodechange: any;
-  listRoot: Map[] = [];
+  rootName: string;
+  isUpdate: boolean;
+  isShowTable: boolean;
+  isDrag: boolean;
+  TableName: string;
+  NodeChange: any;
+  listOrigin: Map[] = [];
   listInput: Map[] = [];
   MatchTitle: string;
-  NodesRoot: Node[] = [];
+  NodesOrigin: Node[] = [];
   NodesInput: Node[] = [];
-  CheckClick = false;
   jsonRaw: any;
   jsonSave: any;
 
   json = `{"Root":{
-    "groupId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-    "whseid": "string",
-    "storerKey": "string",
-    "sku1": "string",
-    "description": "string",
-    "stdNetWeight": 0,
-    "stdGrossWeight": 0,
-    "stdCube": 0,
-    "notes": "string",
-    "wmsSyncDate": "2020-08-27T04:55:24.252Z",
-    "wmsSyncStatus": "string",
-    "wmsSyncError": "string",
-    "tmsSyncDate": "2020-08-27T04:55:24.252Z",
-    "tmsSyncStatus": "string",
-    "tmsSyncError": "string",
-    "sapMessageIdItem": "string",
-    "sapMaterialCode": "string",
-    "sapMaterialDesc": "string",
-    "sapMaterialLongText": "string",
-    "sapMaterialGroup": "string",
-    "sapMaterialGroupDesc": "string",
-    "sapBaseUom": "string",
-    "sapProductHierachy": "string",
-    "sapQtyPerRsc": "string",
-    "sapQtyPerPal": "string",
-    "sapGrossWeight": "string",
-    "sapNetWeight": "string",
-    "sapWeightUnit": "string",
-    "sapCreationDate": "string",
-    "sapVolumn": "string",
-    "sapVolumnUnit": "string",
-    "sapLastUpdate": "string",
-    "sapOldMaterialCode": "string",
-    "sapUpceancode": "string",
-    "sapShelfLife": "string",
-    "sapShelfLifeInd": "string",
-    "sapStatus": "string",
-    "sapLotIndicator": "string"
+    "order": {
+      "soldToId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "shipToId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "consigneeId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "supplierId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "whseid": "string",
+      "storerKey": "string",
+      "orderKey": "string",
+      "omsType": "string",
+      "externalKey1": "string",
+      "externalKey2": "string",
+      "priority": 0,
+      "gate": "string",
+      "door": "string",
+      "carrierCode": "string",
+      "trailerNumber": "string",
+      "driverName": "string",
+      "phoneNumber": "string",
+      "orderDate": "2020-08-29T04:09:51.827Z",
+      "beginTime": "2020-08-29T04:09:51.827Z",
+      "endTime": "2020-08-29T04:09:51.827Z",
+      "requestShipDate": "2020-08-29T04:09:51.827Z",
+      "actualShipDate": "2020-08-29T04:09:51.827Z",
+      "deliveryDate": "2020-08-29T04:09:51.827Z",
+      "expectedReceiptDate": "2020-08-29T04:09:51.827Z",
+      "receiptDate": "2020-08-29T04:09:51.827Z",
+      "status": "string",
+      "type": "string",
+      "wmsSyncDate": "2020-08-29T04:09:51.827Z",
+      "wmsSyncStatus": "string",
+      "wmsSyncError": "string",
+      "tmsSyncDate": "2020-08-29T04:09:51.827Z",
+      "tmsSyncStatus": "string",
+      "tmsSyncError": "string",
+      "userdefine1": "string",
+      "userdefine2": "string",
+      "userdefine3": "string",
+      "userdefine4": "string",
+      "userdefine5": "string",
+      "userdefine6": "string",
+      "userdefine7": "string",
+      "userdefine8": "string",
+      "userdefine9": "string",
+      "userdefine10": "string"
+    },
+    "orderDetail": {
+      "orderId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "skuId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "whseid": "string",
+      "storerKey": "string",
+      "orderLineNumber": "string",
+      "uom": "string",
+      "packKey": "string",
+      "originalQty": 0,
+      "preallocatedQty": 0,
+      "allocatedQty": 0,
+      "pickedQty": 0,
+      "shippedQty": 0,
+      "receivedQty": 0,
+      "netWeight": 0,
+      "grossWeight": 0,
+      "cube": 0,
+      "status": "string",
+      "lottable01": "string",
+      "lottable02": "string",
+      "lottable03": "string",
+      "lottable04": "2020-08-29T04:09:51.827Z",
+      "lottable05": "2020-08-29T04:09:51.827Z",
+      "lottable06": "string",
+      "lottable07": "string",
+      "lottable08": "string",
+      "lottable09": "string",
+      "lottable10": "string",
+      "lottable11": "2020-08-29T04:09:51.827Z",
+      "lottable12": "2020-08-29T04:09:51.827Z",
+      "lpnid": "string",
+      "externallinenumber": "string",
+      "conditioncode": "string",
+      "userdefine1": "string",
+      "userdefine2": "string",
+      "userdefine3": "string",
+      "userdefine4": "string",
+      "userdefine5": "string",
+      "userdefine6": "string",
+      "userdefine7": "string",
+      "userdefine8": "string",
+      "userdefine9": "string",
+      "userdefine10": "string",
+      "wmsSyncDate": "2020-08-29T04:09:51.827Z",
+      "wmsSyncStatus": "string",
+      "wmsSyncError": "string",
+      "tmsSyncDate": "2020-08-29T04:09:51.827Z",
+      "tmsSyncStatus": "string",
+      "tmsSyncError": "string"
+    }
   }}`;
 
   xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -141,13 +198,16 @@ export class AppComponent implements OnInit {
       </ProductItems>
   </ns0:MT_Material>`;
 
+  ngOnInit(): void {
+    this.isShowTable = false;
+    this.isDrag = true;
+  }
 
-
-  FindChildren(x: Node, list: Map[]): void {
+  FindNodesChildren(x: Node, list: Map[]): void {
     for (const item of list) {
       if (item.parent === x.title) {
-        const obj = { parent: item.parent, title: item.title, key: item.title, children: [], isLeaf: true };
-        this.FindChildren(obj, list);
+        const obj = { parent: item.parent, title: item.title, key: (item.key || item.title), children: [], isLeaf: true };
+        this.FindNodesChildren(obj, list);
         if (obj.children.length !== 0) {
           obj.isLeaf = false;
         }
@@ -160,12 +220,14 @@ export class AppComponent implements OnInit {
     let root: Node;
     list.forEach(value => {
       if (value.parent === '') {
-        const obj = { title: value.title, key: value.title, children: [] };
+        const obj = { title: value.title, key: (value.key || value.title), children: [] };
         root = obj;
       }
     });
-    this.RootName = root.title;
-    this.FindChildren(root, list);
+    if (this.isUpdate === false) {
+      this.TableName = (this.TableName || '') + '_' + root.title;
+    }
+    this.FindNodesChildren(root, list);
     nodes.push(root);
   }
 
@@ -179,7 +241,7 @@ export class AppComponent implements OnInit {
     if (flag === 1) {
       if (Array.isArray(value) === true) {
         for (const item of value) {
-          let obj = { parent: key, title: item, children: [] };
+          const obj = { parent: key, title: item };
           list.push(obj);
         }
       }
@@ -187,8 +249,8 @@ export class AppComponent implements OnInit {
   }
 
 
-
-  CheckObj(objs: any, key: any, list: Map[]): void {
+  // Convert object thành list object có dạng{parent: '', tittle: ''}
+  ConvertObjectToList(objs: any, key: any, list: Map[]): void {
     // tslint:disable-next-line: forin
     for (const obj in objs) {
       if (Array.isArray(objs[obj]) === false && typeof (objs[obj]) !== 'string') {
@@ -198,39 +260,26 @@ export class AppComponent implements OnInit {
             keys = k;
           }
         }
-        this.CheckObj(objs[obj], keys, list);
+        this.ConvertObjectToList(objs[obj], keys, list);
       }
       if (Array.isArray(objs[obj]) === true) {
         for (const a of objs[obj]) {
-          this.CheckObj(a, obj, list);
+          this.ConvertObjectToList(a, obj, list);
         }
       }
-
       // tslint:disable-next-line: align
       this.AddMap(key, Object.keys(objs), list);
     }
   }
 
-  ngOnInit(): void {
-    const xml2js = require('xml2js');
-    const parser = new xml2js.Parser({ explicitArray: false });
-
-    this.jsonRaw = JSON.parse(this.json);
-    let jsonTree: string;
-    parser.parseString(this.xml, function (err, result) {
-      jsonTree = result;
-    });
-    this.CheckObj(this.jsonRaw, '', this.listRoot);
-    this.CreateNodes(this.listRoot, this.NodesRoot);
-    this.CheckObj(jsonTree, '', this.listInput);
-    this.CreateNodes(this.listInput, this.NodesInput);
-    console.log(this.NodesRoot);
-  }
-
-
   FindNode(value: Node, key: any, inputTitle: string): Node {
     if (value.title === key.title && value.parent === key.parentNode.title) {
       value.key = inputTitle;
+      this.listOrigin.forEach(x => {
+        if (x.parent === value.parent && x.title === value.title) {
+          x.key = value.key;
+        }
+      });
       return value;
     }
     else {
@@ -244,16 +293,22 @@ export class AppComponent implements OnInit {
     }
   }
 
-  nzDrop(event: NzFormatEmitEvent): void {
-    console.log(event);
+  FindRootNode(node: any): void {
+    if (node.parentNode !== null) {
+      this.FindRootNode(node.parentNode);
+    }
+    else {
+      this.rootName = node.origin.title;
+    }
   }
 
   nzDrag(event: NzFormatEmitEvent): void {
-    if (event.node.origin.parent !== 'Root') {
-      this.Nodechange = '';
+    this.FindRootNode(event.node);
+    if (this.rootName !== 'Root') {
+      this.NodeChange = '';
     }
     else {
-      this.Nodechange = event.node;
+      this.NodeChange = event.node;
     }
   }
 
@@ -265,8 +320,9 @@ export class AppComponent implements OnInit {
     }
     return (val);
   }
+
   nzInputDragStart(event: NzFormatEmitEvent): void {
-    this.Drag = true;
+    this.isDrag = true;
     let link = this.GetLinkOfNode(event.node, '');
     link = link.slice(0, -1);
     this.MatchTitle = link;
@@ -274,32 +330,65 @@ export class AppComponent implements OnInit {
 
   nzEventDragEnd(event: NzFormatEmitEvent): void {
     let res: Node;
-    if (this.Nodechange !== '') {
-      this.NodesRoot.forEach(value => {
+    if (this.NodeChange !== '') {
+      this.NodesOrigin.forEach(value => {
         if (!res) {
-          res = this.FindNode(value, this.Nodechange, this.MatchTitle);
+          res = this.FindNode(value, this.NodeChange, this.MatchTitle);
         }
       });
-      this.NodesRoot = [...this.NodesRoot];
-      this.UpdateJsonReturn();
+      this.NodesOrigin = [...this.NodesOrigin];
     }
   }
 
-  nzRootStart(event: NzFormatEmitEvent): void {
-    this.Drag = false;
+  DisableOriginTree(event: NzFormatEmitEvent): void {
+    this.isDrag = false;
   }
 
-  UpdateJsonReturn(): void {
-    const list = this.NodesRoot[0].children;
-    const newObj = {};
-    list.forEach(x => {
-      newObj[x.title] = x.key;
+
+  SaveTree(): void {
+    localStorage.setItem(this.TableName, JSON.stringify(this.listOrigin));
+    this.listOrigin = [];
+    this.NodesOrigin = [];
+    this.NodesInput = [];
+    console.log(this.listOrigin);
+    this.isShowTable = false;
+  }
+
+  UpdateTree(): void {
+    this.isUpdate = true;
+    this.isShowTable = true;
+    const list = localStorage.getItem('_Root_ns0:MT_Material');
+    this.listOrigin = JSON.parse(list);
+    console.log(this.listOrigin);
+
+    this.CreateNodes(this.listOrigin, this.NodesOrigin);
+
+    const xml2js = require('xml2js');
+    const parser = new xml2js.Parser({ explicitArray: false });
+    this.jsonRaw = JSON.parse(this.json);
+    let jsonTree: string;
+    parser.parseString(this.xml, (Error: any, result: string) => {
+      jsonTree = result;
     });
-    this.jsonSave = newObj;
+    this.ConvertObjectToList(jsonTree, '', this.listInput);
+    this.CreateNodes(this.listInput, this.NodesInput);
   }
 
-  SaveObj(): void{
-    localStorage.setItem(this.RootName, JSON.stringify(this.jsonSave));
+  CreateTree(): void {
+    this.isUpdate = false;
+    this.isShowTable = true;
+    const xml2js = require('xml2js');
+    const parser = new xml2js.Parser({ explicitArray: false });
+    this.jsonRaw = JSON.parse(this.json);
+    let jsonTree: string;
+    parser.parseString(this.xml, (Error: any, result: string) => {
+      jsonTree = result;
+    });
+    this.ConvertObjectToList(this.jsonRaw, '', this.listOrigin);
+    this.CreateNodes(this.listOrigin, this.NodesOrigin);
+
+    this.ConvertObjectToList(jsonTree, '', this.listInput);
+    this.CreateNodes(this.listInput, this.NodesInput);
   }
 }
 

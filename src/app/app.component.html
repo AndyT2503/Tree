@@ -1,13 +1,17 @@
-<div nz-row>
+<button nz-button (click)="SaveTree()" nzType="primary">Save</button>
+<button nz-button (click)="UpdateTree()" nzType="primary">Update</button>
+<button nz-button (click)="CreateTree()" nzType="primary">Create</button>
+
+
+<div nz-row *ngIf="isShowTable == true">
   <nz-tree
-    [nzData]="NodesRoot"
-    [nzDraggable] = "Drag"
+    [nzData]="NodesOrigin"
+    [nzDraggable] = "isDrag"
     nzBlockNode
     (nzOnDragLeave)="nzDrag($event)"
-    (nzOnDrop)="nzDrop($event)"
     [nzTreeTemplate]="nzTreeTemplate" 
     nz-col nzSpan="10"
-    (mouseover)="nzRootStart($event)"
+    (mouseover)="DisableOriginTree($event)"
   ></nz-tree>
   <nz-tree
     [nzData]="NodesInput"
@@ -27,4 +31,3 @@
     >
   </ng-template>
 </div>
-<button nz-button (click)="SaveObj()" nzType="primary">Save</button>
