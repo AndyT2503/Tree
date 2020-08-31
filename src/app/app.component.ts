@@ -344,8 +344,36 @@ export class AppComponent implements OnInit {
     this.isDrag = false;
   }
 
+  FindLink(parent: string, list: Map[], title: string): any {
+    let root = '';
+    for (const item of list) {
+      if (item.title === parent && title !== '') {
+        root = this.FindLink(item.parent, list, item.title);
+      }
+    }
+    let link: string;
+    link = root + '.' + title;
+    return link;
+  }
+
+  GetData(x: any, str: string): void{
+
+  }
+
+  ConvertListToObject(list: Map[]): void {
+    list.forEach(x => {
+      if (x.key !== undefined) {
+        let i: string;
+        i = this.FindLink(x.parent, list, x.title);
+        i = i.slice(1, i.length);
+        console.log(i);
+
+      }
+    });
+  }
 
   SaveTree(): void {
+    this.ConvertListToObject(this.listOrigin);
     localStorage.setItem(this.TableName, JSON.stringify(this.listOrigin));
     this.listOrigin = [];
     this.NodesOrigin = [];
@@ -384,6 +412,7 @@ export class AppComponent implements OnInit {
     parser.parseString(this.xml, (Error: any, result: string) => {
       jsonTree = result;
     });
+
     this.ConvertObjectToList(this.jsonRaw, '', this.listOrigin);
     this.CreateNodes(this.listOrigin, this.NodesOrigin);
 
