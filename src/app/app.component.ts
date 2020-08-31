@@ -314,8 +314,8 @@ export class AppComponent implements OnInit {
 
 
   GetLinkOfNode(node: any, val: string): string {
+    val = node.title + '.' + val;
     if (node.parentNode !== null) {
-      val = node.title + '.' + val;
       val = this.GetLinkOfNode(node.parentNode, val);
     }
     return (val);
@@ -356,25 +356,37 @@ export class AppComponent implements OnInit {
     return link;
   }
 
-  GetData(x: any, str: string): void{
-
+  objSet(obj, keyString, val): any {
+    const keys = keyString.split('.');
+    const l = keys.length;
+    for (let i = 0; i < l - 1; i++) {
+      obj = obj[keys[i]];
+      if (obj === undefined) {
+        return undefined;
+      }
+    }
+    if (obj[keys[l - 1]] === undefined) {
+      return undefined;
+    }
+    obj[keys[l - 1]] = val;
+    return val;
   }
 
-  ConvertListToObject(list: Map[]): void {
+  UpdateValueOfObject(list: Map[]): void {
     list.forEach(x => {
       if (x.key !== undefined) {
         let i: string;
         i = this.FindLink(x.parent, list, x.title);
         i = i.slice(1, i.length);
-        console.log(i);
-
+        this.objSet(this.jsonRaw, i, x.key);
       }
     });
   }
 
   SaveTree(): void {
-    this.ConvertListToObject(this.listOrigin);
-    localStorage.setItem(this.TableName, JSON.stringify(this.listOrigin));
+    this.UpdateValueOfObject(this.listOrigin);
+    console.log(this.jsonRaw.Root.order.soldToId);
+    localStorage.setItem(this.TableName, JSON.stringify(this.jsonRaw));
     this.listOrigin = [];
     this.NodesOrigin = [];
     this.NodesInput = [];
