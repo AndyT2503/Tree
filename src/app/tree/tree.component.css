@@ -1,0 +1,17 @@
+.file-desc,
+.folder-desc {
+    padding: 0 8px;
+    display: inline-block;
+    background: #87ceff;
+    color: #ffffff;
+    position: relative;
+    left: 12px;
+}
+
+button {
+    margin-bottom: 10px;
+}
+
+item-center {
+    text-align: center;
+}

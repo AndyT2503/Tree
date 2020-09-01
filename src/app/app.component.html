@@ -1,33 +1,17 @@
-<button nz-button (click)="SaveTree()" nzType="primary">Save</button>
-<button nz-button (click)="UpdateTree()" nzType="primary">Update</button>
-<button nz-button (click)="CreateTree()" nzType="primary">Create</button>
-
-
-<div nz-row *ngIf="isShowTable == true">
-  <nz-tree
-    [nzData]="NodesOrigin"
-    [nzDraggable] = "isDrag"
-    nzBlockNode
-    (nzOnDragLeave)="nzDrag($event)"
-    [nzTreeTemplate]="nzTreeTemplate" 
-    nz-col nzSpan="10"
-    (mouseover)="DisableOriginTree($event)"
-  ></nz-tree>
-  <nz-tree
-    [nzData]="NodesInput"
-    [nzDraggable] = true
-    nzBlockNode
-    [nzTreeTemplate]="nzTreeTemplate" 
-    (nzOnDragLeave)="nzDrag($event)"
-    (nzOnDragStart)="nzInputDragStart($event)"
-    (nzOnDragEnd)="nzEventDragEnd($event)"
-    nz-col nzSpan="10"	
-  ></nz-tree>
-
-  <ng-template #nzTreeTemplate let-node let-origin="origin">
-    <span class="folder-name">{{ node.title }}</span>
-    <span class="folder-desc"
-      > {{ node.key }}</span
-    >
-  </ng-template>
-</div>
+<nz-layout>
+  <nz-content>
+    <button nz-button (click)="UpdateTree()" nzType="primary">Update</button>
+    <button nz-button (click)="CreateTree()" nzType="primary">Create</button>
+    <div class="inner-content">
+      <app-tree *ngIf="isEdit === 'true'; else ngList" [xml]="xmlFile"></app-tree>
+      <ng-template #ngList>
+        <app-create
+          (SentXML)="GetXML($event)"
+          (EditConfirm)="EditConfirm($event)"
+          [isSelect]="isSelect"
+        ></app-create>
+      </ng-template>
+    </div>
+  </nz-content>
+  <nz-footer>Ant Design ©2020 Implement By Angular</nz-footer>
+</nz-layout>

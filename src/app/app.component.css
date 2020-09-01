@@ -1,13 +1,19 @@
-.file-desc,
-.folder-desc {
-    padding: 0 8px;
-    display: inline-block;
-    background: #87ceff;
-    color: #ffffff;
-    position: relative;
-    left: 12px;
+nz-content {
+    padding: 0 50px;
 }
 
-button{
+button {
     margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.inner-content {
+    background: #fff;
+    padding: 24px;
+    min-height: 280px;
+}
+
+nz-footer {
+    text-align: center;
 }

@@ -1,0 +1,29 @@
+<button nz-button (click)="SaveTree()" nzType="primary">Save</button>
+<div nz-row class="item-center">
+  <nz-tree
+    [nzData]="NodesOrigin"
+    [nzDraggable]="isDrag"
+    nzBlockNode
+    (nzOnDragLeave)="nzDrag($event)"
+    [nzTreeTemplate]="nzTreeTemplate"
+    nz-col
+    nzSpan="12"
+    (mouseover)="DisableOriginTree($event)"
+  ></nz-tree>
+  <nz-tree
+    [nzData]="NodesInput"
+    [nzDraggable]="true"
+    nzBlockNode
+    [nzTreeTemplate]="nzTreeTemplate"
+    (nzOnDragLeave)="nzDrag($event)"
+    (nzOnDragStart)="nzInputDragStart($event)"
+    (nzOnDragEnd)="nzEventDragEnd($event)"
+    nz-col
+    nzSpan="12"
+  ></nz-tree>
+
+  <ng-template #nzTreeTemplate let-node let-origin="origin">
+    <span class="folder-name">{{ node.title }}</span>
+    <span class="folder-desc"> {{ node.key }}</span>
+  </ng-template>
+</div>
