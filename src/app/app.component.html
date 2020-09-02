@@ -3,7 +3,7 @@
     <button nz-button (click)="UpdateTree()" nzType="primary">Update</button>
     <button nz-button (click)="CreateTree()" nzType="primary">Create</button>
     <div class="inner-content">
-      <app-tree *ngIf="isEdit === 'true'; else ngList" [xml]="xmlFile"></app-tree>
+      <app-tree *ngIf="isEdit; else ngList" [xml]="xmlFile"></app-tree>
       <ng-template #ngList>
         <app-create
           (SentXML)="GetXML($event)"

@@ -1,4 +1,4 @@
-<app-list *ngIf="isSelect === 'true'; else Create"></app-list>
+<app-list *ngIf="isSelect; else Create"></app-list>
 <ng-template #Create>
   <input placeholder="XML File" [(ngModel)]="xml" />
   <nz-select

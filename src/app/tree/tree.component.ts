@@ -16,6 +16,7 @@ interface Map {
   parent: string;
   title: any;
   key?: string;
+  isLeaf?: boolean;
 }
 
 const xml2js = require('xml2js');
@@ -27,6 +28,7 @@ const dotProp = require('dot-prop');
 })
 export class TreeComponent implements OnInit {
 
+  listLeaf: any[] = [];
   rootName: string;
   isUpdate: boolean;
   isShowTable: boolean;
@@ -117,6 +119,7 @@ export class TreeComponent implements OnInit {
     "Pack": {
       "Whseid": null,
       "Storerkey": null,
+      "Sku": null,
       "Uom": null,
       "NumeratorConversion": 0,
       "DenominatorConversion": 0,
@@ -141,6 +144,104 @@ export class TreeComponent implements OnInit {
       "ModifiedDate": null,
       "Modifier": null,
       "Id": "00000000-0000-0000-0000-000000000000"
+    },
+    "ProductBarcode": {
+      "Whseid": null,
+      "Storerkey": null,
+      "Sku": null,
+      "Barcode": null,
+      "BarcodeUoM": null,
+      "MainBarcode": null,
+      "WmsSyncDate": null,
+      "WmsSyncStatus": null,
+      "WmsSyncError": null,
+      "TmsSyncDate": null,
+      "TmsSyncStatus": null,
+      "TmsSyncError": null,
+      "ClientId": null,
+      "ClientCode": null,
+      "CreatedBy": null,
+      "CreatedDate": null,
+      "Creator": null,
+      "ModifiedBy": null,
+      "ModifiedDate": null,
+      "Modifier": null,
+      "Id": "00000000-0000-0000-0000-000000000000"
+    },
+    "Supplier": {
+      "Whseid": null,
+      "Code": null,
+      "Name": null,
+      "Address": null,
+      "CountryCode": null,
+      "ProvinceCode": null,
+      "DistrictCode": null,
+      "WardCode": null,
+      "TaxCode": null,
+      "PhoneNumber": null,
+      "WmsSyncDate": null,
+      "WmsSyncStatus": null,
+      "WmsSyncError": null
+    },
+    "Order": {
+      "SoldToId": null,
+      "ShipToId": null,
+      "ConsigneeId": null,
+      "SupplierId": null,
+      "Whseid": null,
+      "StorerKey": null,
+      "OrderKey": null,
+      "OmsType": null,
+      "ExternalKey1": null,
+      "ExternalKey2": null,
+      "Priority": 0,
+      "Gate": null,
+      "Door": null,
+      "CarrierCode": null,
+      "TrailerNumber": null,
+      "DriverName": null,
+      "PhoneNumber": null,
+      "OrderDate": null,
+      "BeginTime": null,
+      "EndTime": null,
+      "RequestShipDate": null,
+      "ActualShipDate": null,
+      "DeliveryDate": null,
+      "ExpectedReceiptDate": null,
+      "ReceiptDate": null,
+      "Status": null,
+      "Type": null,
+      "WmsSyncDate": null,
+      "WmsSyncStatus": null,
+      "WmsSyncError": null,
+      "TmsSyncDate": null,
+      "TmsSyncStatus": null,
+      "TmsSyncError": null,
+      "Userdefine1": null,
+      "Userdefine2": null,
+      "Userdefine3": null,
+      "Userdefine4": null,
+      "Userdefine5": null,
+      "Userdefine6": null,
+      "Userdefine7": null,
+      "Userdefine8": null,
+      "Userdefine9": null,
+      "Userdefine10": null,
+      "Consignee": null,
+      "ShipTo": null,
+      "SoldTo": null,
+      "Supplier": null,
+      "Orderdetail": [],
+      "Tripdetail": [],
+      "ClientId": null,
+      "ClientCode": null,
+      "CreatedBy": null,
+      "CreatedDate": null,
+      "Creator": null,
+      "ModifiedBy": null,
+      "ModifiedDate": null,
+      "Modifier": null,
+      "Id": "00000000-0000-0000-0000-000000000000"
     }
   }}`;
   @Input() xml: string;
@@ -154,28 +255,28 @@ export class TreeComponent implements OnInit {
     const parser = new xml2js.Parser({ explicitArray: false });
 
     this.jsonRaw = JSON.parse(this.json);
-    console.log(this.jsonRaw);
     let jsonTree: string;
     parser.parseString(this.xml, (Error: any, result: string) => {
       jsonTree = result;
     });
 
     this.ConvertObjectToList(this.jsonRaw, '', this.listOrigin);
+    this.CheckIsLeaf(this.listOrigin);
+    console.log(this.listOrigin);
     this.GetValueOfList(this.listOrigin, this.jsonRaw);
     this.CreateNodes(this.listOrigin, this.NodesOrigin);
-    console.log(this.jsonRaw);
 
     this.ConvertObjectToList(jsonTree, '', this.listInput);
+    this.CheckIsLeaf(this.listInput);
     this.CreateNodes(this.listInput, this.NodesInput);
   }
 
   FindNodesChildren(x: Node, list: Map[]): void {
     for (const item of list) {
       if (item.parent === x.title) {
-        const obj = { parent: item.parent, title: item.title, key: (item.key || item.title), children: [], isLeaf: true };
-        this.FindNodesChildren(obj, list);
-        if (obj.children.length !== 0) {
-          obj.isLeaf = false;
+        const obj = { parent: item.parent, title: item.title, key: (item.key || item.title), children: [], isLeaf: item.isLeaf };
+        if (item.isLeaf === false) {
+          this.FindNodesChildren(obj, list);
         }
         x.children.push(obj);
       }
@@ -214,6 +315,21 @@ export class TreeComponent implements OnInit {
     }
   }
 
+  CheckIsLeaf(list: Map[]): void {
+    list.forEach(item => {
+      let check = 0;
+      this.listLeaf.forEach(leaf => {
+        if (item.parent === leaf.parent && item.title === leaf.title) {
+          check = 1;
+        }
+      });
+      if (check === 1) {
+        item.isLeaf = true;
+      }
+      else { item.isLeaf = false; }
+    });
+  }
+
   GetValueOfList(list: Map[], json: any): void {
     list.forEach(x => {
       let i: string;
@@ -241,10 +357,6 @@ export class TreeComponent implements OnInit {
   ConvertObjectToList(objs: any, key: any, list: Map[]): void {
     // tslint:disable-next-line: forin
     for (const obj in objs) {
-      let value: any;
-      if (typeof (objs[obj]) === 'string') {
-        value = objs[obj];
-      }
       if (Array.isArray(objs[obj]) === false && typeof (objs[obj]) !== 'string') {
         let keys: any;
         for (const k of Object.keys(objs)) {
@@ -261,6 +373,11 @@ export class TreeComponent implements OnInit {
       }
       // tslint:disable-next-line: align
       this.AddMap(key, Object.keys(objs), list);
+      if ((Array.isArray(objs[obj]) === true && objs[obj].length === 0) || typeof (objs[obj]) === 'string'
+        || objs[obj] === null || typeof (objs[obj]) === 'number') {
+        const leaf = { parent: key, title: obj };
+        this.listLeaf.push(leaf);
+      }
     }
   }
 
@@ -301,8 +418,6 @@ export class TreeComponent implements OnInit {
     }
     else {
       this.NodeChange = event.node;
-      console.log(this.NodeChange);
-      
     }
   }
 
@@ -341,7 +456,7 @@ export class TreeComponent implements OnInit {
   FindLink(parent: string, list: Map[], title: string): any {
     let root = '';
     for (const item of list) {
-      if (item.title === parent && title !== '') {
+      if (item.title === parent && title !== '' && item.isLeaf === false) {
         root = this.FindLink(item.parent, list, item.title);
       }
     }
@@ -350,21 +465,6 @@ export class TreeComponent implements OnInit {
     return link;
   }
 
-  objSet(obj, keyString, val): any {
-    const keys = keyString.split('.');
-    const l = keys.length;
-    for (let i = 0; i < l - 1; i++) {
-      obj = obj[keys[i]];
-      if (obj === undefined) {
-        return undefined;
-      }
-    }
-    if (obj && obj[keys[l - 1]]) {
-      return undefined;
-    }
-    obj[keys[l - 1]] = val;
-    return val;
-  }
 
   UpdateValueOfObject(list: Map[]): void {
     list.forEach(x => {
@@ -372,9 +472,6 @@ export class TreeComponent implements OnInit {
         let i: string;
         i = this.FindLink(x.parent, list, x.title);
         i = i.slice(1, i.length);
-        console.log(x.key);
-        console.log(i);
-
         dotProp.set(this.jsonRaw, i, x.key);
       }
     });
@@ -383,7 +480,6 @@ export class TreeComponent implements OnInit {
   SaveTree(): void {
     this.UpdateValueOfObject(this.listOrigin);
     let str = JSON.stringify(this.jsonRaw);
-    console.log(this.NodesOrigin[0]);
     str = str.replace('{"Root":', '');
     str = str.slice(0, -1);
     localStorage.setItem(this.TableName, str);
@@ -410,6 +506,4 @@ export class TreeComponent implements OnInit {
     this.ConvertObjectToList(jsonTree, '', this.listInput);
     this.CreateNodes(this.listInput, this.NodesInput);
   }
-
-
 }

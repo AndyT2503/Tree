@@ -11,34 +11,34 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  isEdit: string;
-  isSelect: string;
+  isEdit: boolean;
+  isSelect: boolean;
   isDisable: boolean;
   xmlFile: string;
   ngOnInit(): void {
-    this.isEdit = 'false';
+    this.isEdit = false;
     this.isDisable = true;
   }
 
 
 
   UpdateTree(): void {
-    this.isSelect = 'true';
-    this.isEdit = 'false';
+    this.isSelect = true;
+    this.isEdit = false;
     this.isDisable = true;
   }
 
   CreateTree(): void {
     this.isDisable = true;
-    this.isEdit = 'false';
-    this.isSelect = 'false';
+    this.isEdit = false;
+    this.isSelect = false;
   }
 
   GetXML(xml: string): void {
     this.xmlFile = xml;
   }
 
-  EditConfirm(bool: string): void {
+  EditConfirm(bool: boolean): void {
     this.isEdit = bool;
     this.isDisable = false;
   }

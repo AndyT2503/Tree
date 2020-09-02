@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-list',
@@ -12,7 +12,8 @@ export class ListComponent implements OnInit {
   loadingMore = false;
   data: any[] = [];
   list = ['Sku-Material', 'Sku-Material', 'Sku-Material'];
-
+  @Output() DataEdit = new EventEmitter<string>();
+  @Output() EditConfirm = new EventEmitter<boolean>();
   constructor() { }
 
   ngOnInit(): void {
@@ -33,7 +34,8 @@ export class ListComponent implements OnInit {
   } */
 
   edit(item: any): void {
-    console.log(item);
+    this.DataEdit.emit(item);
+    this.EditConfirm.emit(true);
   }
 
   Delete(item): void {

@@ -10,11 +10,11 @@ export class CreateComponent implements OnInit {
 
   xml: string;
   @Output() SentXML = new EventEmitter<string>();
-  @Output() EditConfirm = new EventEmitter<string>();
+  @Output() EditConfirm = new EventEmitter<boolean>();
 
   selectedValue: string;
   isEdit: boolean;
-  @Input() isSelect: string;
+  @Input() isSelect: boolean;
   constructor() { }
 
   ngOnInit(): void {
@@ -24,7 +24,7 @@ export class CreateComponent implements OnInit {
   Mapping(): void {
     this.SentXML.emit(this.xml);
     this.isEdit = true;
-    this.EditConfirm.emit('true');
+    this.EditConfirm.emit(this.isEdit);
   }
 
 }
